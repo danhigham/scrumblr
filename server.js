@@ -1,9 +1,9 @@
 /**************
  SYSTEM INCLUDES
 **************/
-var	http = require('http');
+var http = require('http');
 var sys = require('sys');
-var	async = require('async');
+var async = require('async');
 var sanitizer = require('sanitizer');
 var compression = require('compression');
 var express = require('express');
@@ -26,6 +26,7 @@ var sids_to_user_names = [];
  SETUP EXPRESS
 **************/
 var app = express();
+app.all('*', ensureSecure);
 var router = express.Router();
 
 app.use(compression());
@@ -48,6 +49,14 @@ var io = require('socket.io')(server, {
 	path: conf.baseurl == '/' ? '' : conf.baseurl + "/socket.io"
 });
 
+
+function ensureSecure(req, res, next){
+	console.log(req.headers['x-forwarded-proto'])
+	if(req.headers['x-forwarded-proto']=='https'){
+		return next();
+	};
+	res.redirect('https://' + req.hostname + req.url); // express 4.x
+}
 
 /**************
  ROUTES
@@ -79,6 +88,11 @@ router.get('/:id', function(req, res){
 	});
 });
 
+router.delete('/:id', function(req, res){
+	db.clearRoom(req.params.id, function() {
+		res.send('Room ' + req.params.id + ' cleared OK\n')
+	});
+});
 
 /**************
  SOCKET.I0

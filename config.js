@@ -25,11 +25,13 @@ exports.googleanalytics = {
 };
 
 var vcap_services = process.env.VCAP_SERVICES;
-var rediscloud_service = JSON.parse(vcap_services)["rediscloud"][0]
-var credentials = rediscloud_service.credentials;
+var redisURL = ''
+if (vcap_services != null) {
+	var rediscloud_service = JSON.parse(vcap_services)["rediscloud"][0]
+	var credentials = rediscloud_service.credentials;
 
-var redisURL = 'redis://:' + credentials.password + '@' + credentials.hostname + ':' + credentials.port
-
+	redisURL = 'redis://:' + credentials.password + '@' + credentials.hostname + ':' + credentials.port
+}
 console.log(redisURL)
 exports.database = {
 	type: 'redis',
