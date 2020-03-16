@@ -1,0 +1,10 @@
+---
+applications:
+- name: scrumblr
+  memory: 256M
+  instances: 1
+  routes:
+  - route: whiteboard.bob.high.am
+  - route: scrumblr-dh.cfapps.io
+  services:
+  - collab-redis
